@@ -1,0 +1,47 @@
+# Version
+version: '3.3'
+
+# List of services
+services:
+
+    nginx:
+        image: nginx:latest
+        container_name: oggetto-nginx
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - ./nginx/core:/etc/nginx/conf.d
+            - ./src:/var/www/
+            - ./nginx/Logs:/var/log/nginx/
+            - ./nginx/html:/usr/share/nginx/html/
+        links:
+            - php
+
+    mysql:
+        image: mysql:5.7
+        ports:
+            - "3306:3306"
+        container_name: oggetto-mysql
+        environment:
+            - MYSQL_ROOT_PASSWORD=toor
+            - MYSQL_ROOT_HOST=%
+        volumes:
+            - ./mySQL:/var/lib/mysql
+
+    php:
+        build: ./php
+        container_name: oggetto-php-fpm
+        volumes:
+            - ./src:/var/www
+        links:
+            - mysql
+
+    phpmyadmin:
+
+        image: phpmyadmin/phpmyadmin
+        container_name: oggetto-phpmyadmin
+        ports:
+            - 8090:80
+        links:
+            - mysql:db
